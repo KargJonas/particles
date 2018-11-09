@@ -6,22 +6,36 @@ let particles = [];
 let maxLength;
 let ui;
 let amount = 100;
+let particleForce = 0;
 
 function setup() {
   if (!ui) {
     ui = {
       reset: createButton("Reset"),
       gravity: createCheckbox("Gravity", true),
-      cohesion: createCheckbox("Cohesion", true),
       clear: createCheckbox("Clear", true),
+      particleForceSelector: createSelect(),
+      newline: createP(),
       amount: createInput(amount)
     };
 
     ui.reset.mousePressed(setup);
+
     ui.amount.input(() => {
       amount = ui.amount.value() || 1;
       particles = [];
       setup();
+    });
+
+    ui.particleForceSelector.option("No Particle Forces");
+    ui.particleForceSelector.option("Attraction");
+    ui.particleForceSelector.option("Repulsion");
+    ui.particleForceSelector.changed(() => {
+      particleForce = {
+        "No Particle Forces": 0,
+        "Attraction": .0004,
+        "Repulsion": -.004
+      }[ui.particleForceSelector.value()];
     });
   }
 
@@ -35,8 +49,6 @@ function setup() {
       createVector(random(20, width - 20), random(20, height - 20)),
       random(1, 5)
     );
-
-    // particles[i].applyForce(createVector(random(-10, 10), 0));
   }
 }
 
@@ -50,7 +62,7 @@ function draw() {
       particle.applyForce(createVector(mouseX, mouseY).sub(particle.pos).div(3000));
     }
 
-    if (ui.cohesion.checked()) {
+    if (particleForce) {
       particles.map(p => {
         if (p.num === particle.num) {
           return;
@@ -63,12 +75,13 @@ function draw() {
           p.pos.y
         );
 
+        // Cohesion
         if (neighborDistance < 50) {
           particle.applyForce(
             createVector(
               p.pos.x - particle.pos.x,
               p.pos.y - particle.pos.y
-            ).mult(.0004)
+            ).mult(particleForce)
           );
         }
       });

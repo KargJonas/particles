@@ -15,6 +15,8 @@ class Particle {
     this.minY = this.size;
     this.maxY = height - this.size;
 
+    this.neighbors = [];
+
     this.num = count;
     count++;
   }
@@ -28,6 +30,8 @@ class Particle {
     this.vel.add(this.acc);
     this.acc.mult(0);
     this.step = p5.Vector.add(this.pos, this.vel);
+
+    // this.neighbors.map();
 
     if (this.step.x < this.minX || this.step.x > this.maxX || this.step.y < this.minY || this.step.y > this.maxY) {
       if (this.step.x < this.minX || this.step.x > this.maxX) {
